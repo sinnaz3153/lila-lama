@@ -1,1 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Translator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #1e1e2f;
+            color: #e0e0e0;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        .container {
+            background: #2e2e3f;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+            box-sizing: border-box; /* Include padding and border in width calculation */
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #d4b5ff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            background: #3e3e4f;
+            color: #e0e0e0;
+            box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.2);
+            resize: none;
+            font-size: 14px;
+            transition: border 0.3s ease;
+            box-sizing: border-box; /* Include padding and border in width calculation */
+        }
+        textarea:focus {
+            border: 1px solid #b085f5;
+            outline: none;
+            box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.3);
+        }
+        button {
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(106, 13, 173, 0.4);
+            transition: all 0.3s ease;
+            width: calc(50% - 10px); /* Ensure buttons fit within the container */
+            box-sizing: border-box; /* Include padding and border in width calculation */
+        }
+        button:hover {
+            background-color: #5b0c99;
+            box-shadow: 0 8px 20px rgba(106, 13, 173, 0.5);
+            transform: translateY(-2px);
+        }
+        .loader {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 30, 47, 0.9);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .loader:after {
+            content: '';
+            width: 50px;
+            height: 50px;
+            border: 5px solid #b085f5;
+            border-top: 5px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between; /* Distribute buttons evenly */
+        }
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+    
+    <div class="container">
+        <h1>Text Translator</h1>
+        
+        <textarea id="inputText" placeholder="Enter text to translate..."></textarea>
+        <div class="button-group">
+            <button onclick="copyToClipboard('inputText')">Copy Input</button>
+            <button onclick="pasteFromClipboard('inputText')">Paste</button>
+        </div>
+        
+        <button onclick="translateText()">Translate</button>
+        
+        <textarea id="outputText" placeholder="Translation output..." readonly></textarea>
+        <div class="button-group">
+            <button onclick="copyToClipboard('outputText')">Copy Output</button>
+            <button onclick="pasteFromClipboard('outputText')">Paste</button>
+        </div>
+        
+        <button onclick="reverseTranslateText()">Reverse Translate</button>
+    </div>
 
+    <script>
+        // Character mapping from JSON
+        const mapping = {
+            "a": "%6", "b": "ʖ", "c": "ᓵ", "d": "↸", "e": "ᒷ", "f": "⎓", "g": "⊣", "h": "⍑", "i": "╎", "j": "⋮", 
+            "k": "ꖌ", "l": "ꖎ", "m": "ᒲ", "n": "リ", "o": "𝙹", "p": "!¡", "q": "ᑑ", "r": "∷", "s": "ᓭ", "t": "ℸ ̣", 
+            "u": "⚍", "v": "⍊", "w": "∴", "x": "̇/", "y": "§", "z": "⨅", "=": "=", "ü": "|"
+        };
+
+        // Reverse the mapping for reverse translation
+        const reverseMapping = Object.fromEntries(Object.entries(mapping).map(([key, value]) => [value, key]));
+
+        // Function to translate text using the mapping
+        function translateText() {
+            const inputText = document.getElementById('inputText').value.toLowerCase();
+            let translated = '';
+            let i = 0;
+
+            while (i < inputText.length) {
+                let match = '';
+                for (let len = 6; len >= 3; len--) {  // Check lengths from 6 to 3
+                    if (i + len <= inputText.length) {
+                        const substring = inputText.substring(i, i + len);
+                        if (mapping[substring]) {
+                            match = mapping[substring];
+                            i += len;  // Move index forward by the matched length
+                            break;
+                        }
+                    }
+                }
+                if (!match) {
+                    match = mapping[inputText[i]] || inputText[i];  // Default to single character translation
+                    i += 1;  // Move index forward by 1
+                }
+                translated += match;
+            }
+            
+            document.getElementById('outputText').value = translated;
+        }
+
+        // Function to reverse translate text using the reverse mapping
+        function reverseTranslateText() {
+            const inputText = document.getElementById('outputText').value;
+            let reversed = '';
+            let i = 0;
+
+            while (i < inputText.length) {
+                let match = '';
+                for (let len = 6; len >= 3; len--) {  // Check lengths from 6 to 3
+                    if (i + len <= inputText.length) {
+                        const substring = inputText.substring(i, i + len);
+                        if (reverseMapping[substring]) {
+                            match = reverseMapping[substring];
+                            i += len;  // Move index forward by the matched length
+                            break;
+                        }
+                    }
+                }
+                if (!match) {
+                    match = reverseMapping[inputText[i]] || inputText[i];  // Default to single character translation
+                    i += 1;  // Move index forward by 1
+                }
+                reversed += match;
+            }
+            
+            document.getElementById('outputText').value = reversed;
+        }
+
+        // Function to copy text to clipboard
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId);
+            text.select();
+            document.execCommand('copy');
+        }
+
+        // Function to paste text from clipboard
+        async function pasteFromClipboard(elementId) {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById(elementId).value = text;
+            } catch (err) {
+                console.error('Failed to paste: ', err);
+            }
+        }
+
+        // Hide loader after page loads
+        window.onload = function() {
+            document.querySelector('.loader').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
