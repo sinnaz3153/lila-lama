@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>19er-Buch Verschlüsselung</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #1e1e2f;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        .container {
+            background: #2e2e3f;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            box-sizing: border-box;
+            animation: fadeIn 1s ease-out;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #d4b5ff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        textarea, input {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            background: #3e3e4f;
+            color: #e0e0e0;
+            box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.2);
+            resize: none;
+            font-size: 14px;
+            transition: border 0.3s ease;
+            box-sizing: border-box;
+        }
+        textarea:focus, input:focus {
+            border: 1px solid #b085f5;
+            outline: none;
+            box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.3);
+        }
+        button {
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(106, 13, 173, 0.4);
+            transition: all 0.3s ease;
+            width: calc(50% - 10px); /* Ensure buttons fit within the container */
+            box-sizing: border-box;
+        }
+        button:hover {
+            background-color: #5b0c99;
+            box-shadow: 0 8px 20px rgba(106, 13, 173, 0.5);
+            transform: translateY(-2px);
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 34px;
+            margin: 20px 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #6a0dad;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .mode-label {
+            font-size: 18px;
+            margin-top: 10px;
+            color: #d4b5ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>19er-Buch Verschlüsselung</h1>
+        
+        <!-- Toggle Switch -->
+        <div class="toggle-switch">
+            <input type="checkbox" id="modeToggle" onclick="toggleMode()">
+            <span class="slider"></span>
+        </div>
+        <label for="modeToggle" class="mode-label">Modus: Verschlüsseln</label>
+        
+        <!-- Textarea for input -->
+        <textarea id="inputText" placeholder="Gib deine Nachricht ein..."></textarea>
+        <div class="button-group">
+            <button onclick="copyToClipboard('inputText')">Kopieren</button>
+            <button onclick="pasteFromClipboard('inputText')">Einfügen</button>
+        </div>
+
+        <!-- Button for encryption/decryption -->
+        <button id="actionButton" onclick="performAction()">Nachricht verschlüsseln</button>
+        
+        <!-- Textarea for output -->
+        <textarea id="outputText" placeholder="Ergebnis..." readonly></textarea>
+        <div class="button-group">
+            <button onclick="copyToClipboard('outputText')">Kopieren</button>
+            <button onclick="pasteFromClipboard('outputText')">Einfügen</button>
+        </div>
+    </div>
+
+    <script>
+        let isEncryptMode = true;
+
+        function randomChoice(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateLine(correctLetter) {
+            const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lineLength = 19;
+            
+            let randomLetters = [];
+            for (let i = 0; i < lineLength - 1; i++) {
+                randomLetters.push(randomChoice(letters));
+            }
+            
+            const correctLetterPosition = Math.floor(Math.random() * 9) + 1;
+            const numberPosition = Math.floor(Math.random() * 10) + 10;
+            const numberValue = correctLetterPosition;
+
+            randomLetters[correctLetterPosition - 1] = correctLetter;
+            randomLetters.splice(numberPosition - 1, 0, numberValue.toString());
+            
+            return randomLetters.join('');
+        }
+
+        function generateEmptyLine() {
+            const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lineLength = 19;
+            
+            let randomLetters = [];
+            for (let i = 0; i < lineLength - 2; i++) {
+                randomLetters.push(randomChoice(letters));
+            }
+            
+            const numberPosition = Math.floor(Math.random() * 10) + 10;
+            randomLetters.splice(numberPosition - 1, 0, '0');
+            
+            return randomLetters.join('');
+        }
+
+        function generateSecretMessage(message) {
+            const secretLines = [];
+            for (let i = 0; i < message.length; i++) {
+                const char = message[i];
+                if (char === ' ') {
+                    secretLines.push(generateEmptyLine());
+                } else {
+                    secretLines.push(generateLine(char));
+                }
+
+                if ((i + 1) % 14 === 0) {
+                    secretLines.push('');  // Empty line every 14th character
+                }
+            }
+            return secretLines.join('\n');
+        }
+
+        function extractLetterFromLine(line) {
+            const partToCheck = line.slice(9);
+            const numberMatch = partToCheck.match(/\d/);
+            if (numberMatch) {
+                const numberValue = parseInt(numberMatch[0]);
+                if (numberValue >= 1 && numberValue <= 9) {
+                    return line[numberValue - 1];
+                }
+            }
+            return null;
+        }
+
+        function extractMessageFromLines(lines) {
+            const message = [];
+            for (let line of lines) {
+                if (line.length < 18) {
+                    console.log(`Fehler: Die Zeile '${line}' hat weniger als 18 Zeichen und wird ignoriert.`);
+                    continue;
+                }
+
+                if (line.slice(9).includes('0')) {
+                    message.push(' ');
+                } else {
+                    const letter = extractLetterFromLine(line);
+                    if (letter) {
+                        message.push(letter);
+                    }
+                }
+            }
+            return message.join('');
+        }
+
+        function decryptSecretMessage(secretMessage) {
+            const lines = secretMessage.split('\n');
+            const cleanedLines = lines.filter(line => line.trim());
+            let decrypted = '';
+            cleanedLines.forEach(line => {
+                decrypted += extractMessageFromLines([line]) + ' ';
+            });
+            return decrypted.trim();
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId);
+            text.select();
+            document.execCommand('copy');
+        }
+
+        async function pasteFromClipboard(elementId) {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById(elementId).value = text;
+            } catch (err) {
+                console.error('Failed to paste: ', err);
+            }
+        }
+
+        function toggleMode() {
+            isEncryptMode = !isEncryptMode;
+            document.querySelector('.mode-label').textContent = isEncryptMode ? 'Modus: Verschlüsseln' : 'Modus: Entschlüsseln';
+            document.getElementById('actionButton').textContent = isEncryptMode ? 'Nachricht verschlüsseln' : 'Nachricht entschlüsseln';
+        }
+
+        function performAction() {
+            const inputText = document.getElementById('inputText').value;
+            const outputText = isEncryptMode ? generateSecretMessage(inputText) : decryptSecretMessage(inputText);
+            document.getElementById('outputText').value = outputText;
+        }
+    </script>
+</body>
+</html>
