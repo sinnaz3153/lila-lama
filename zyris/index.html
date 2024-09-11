@@ -7,148 +7,204 @@
     <title>Zyris Sparchen Translator</title>
     <link rel="icon" type="image/png" href="Zyris-mainv2.jpeg">
     <style>
-body {
-    font-family: 'Arial', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-    background: #1e1e2f;
-    color: #e0e0e0;
-    overflow-x: hidden; /* Prevent horizontal scroll */
-}
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #000000;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
 
-.container {
-    background: #2e2e3f;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(209, 25, 255, 0.532);
-    width: 90%;
-    max-width: 600px;
-    text-align: center;
-    animation: fadeIn 1s ease-out;
-    box-sizing: border-box; /* Include padding and border in width calculation */
-}
+        .container, .login-container {
+            background: #00000080;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 200px rgba(60, 0, 255, 0.626), 0 0 400px purple;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+            box-sizing: border-box;
+        }
 
-h1 {
-    margin-bottom: 20px;
-    color: #00fffb;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
+        h1 {
+            margin-bottom: 20px;
+            color: #9500ff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
 
-.textarea-container {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
+        .textarea-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
 
-textarea {
-    width: 100%;
-    height: 100px;
-    margin: 10px 0;
-    padding: 15px;
-    border: 1px solid #444;
-    border-radius: 10px;
-    background: #3e3e4f;
-    color: #e0e0e0;
-    box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.2);
-    resize: none;
-    font-size: 14px;
-    transition: border 0.3s ease;
-    box-sizing: border-box; /* Include padding and border in width calculation */
-}
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            background: #3e3e4f;
+            color: #e0e0e0;
+            box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.2);
+            resize: none;
+            font-size: 14px;
+            transition: border 0.3s ease;
+            box-sizing: border-box;
+            overflow-y: auto;
+            scrollbar-color: magenta purple;
+            scrollbar-width: thin;
+        }
 
-textarea:focus {
-    border: 1px solid #b085f5;
-    outline: none;
-    box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.3);
-}
+        textarea::-webkit-scrollbar {
+            width: 2px;
+        }
 
-button {
-    background-color: #000000;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    margin: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    box-shadow: 0 5px 15px rgba(106, 13, 173, 0.4);
-    transition: all 0.3s ease;
-    width: calc(50% - 10px); /* Ensure buttons fit within the container */
-    box-sizing: border-box; /* Include padding and border in width calculation */
-}
+        textarea::-webkit-scrollbar-track {
+            background: rgb(0, 0, 0);
+            border-radius: 10px;
+        }
 
-button:hover {
-    background-color: #8f00fd60;
-    box-shadow: 0 8px 20px rgba(106, 13, 173, 0.5);
-    transform: translateY(-2px);
-}
+        textarea::-webkit-scrollbar-thumb {
+            background-color: magenta;
+            border-radius: 1px;
+            border: 2px solid purple;
+        }
 
-.loader {
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(30, 30, 47, 0.9);
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
+        textarea:focus {
+            border: 1px solid #b085f5;
+            outline: none;
+            box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.3);
+        }
 
-.loader:after {
-    content: '';
-    width: 50px;
-    height: 50px;
-    border: 5px solid #b085f5;
-    border-top: 5px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
+        button {
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(7, 251, 255, 0.595), 0 0 15px rgb(180, 13, 231);
+            transition: all 0.3s ease;
+            width: calc(50% - 10px);
+            box-sizing: border-box;
+        }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn {
-    0% { opacity: 0; transform: scale(0.9); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-.button-group {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between; /* Distribute buttons evenly */
-}
-
-/* Add new layout rules for larger screens */
-@media screen and (min-width: 600px) {
-    .textarea-container {
-        flex-direction: row;
-        justify-content: space-between;
+        button:hover {
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.5), 0 0 30px rgb(255, 255, 255);
+            transform: translateY(-2px);
+        }
+        button:active::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        animation: clickEffect 0.6s ease-out;
+        pointer-events: none;
     }
 
-    textarea {
-        width: calc(50% - 10px);
-        height: 150px;
+    @keyframes clickEffect {
+        0% {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(3);
+            opacity: 0;
+        }
     }
 
-    .container {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
+        .loader {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 30, 47, 0.9);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
 
-    .button-group-top {
-        order: -1; /* Move the top buttons above textareas */
-    }
-}
+        .loader:after {
+            content: '';
+            width: 50px;
+            height: 50px;
+            border: 5px solid #b085f5;
+            border-top: 5px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        @media screen and (min-width: 600px) {
+            .textarea-container {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            textarea {
+                width: calc(50% - 10px);
+                height: 150px;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .button-group-top {
+                order: -1;
+            }
+        }
+
+        .container {
+            display: none;
+        }
+
+        /* Custom CSS for login page */
+        .login-container {
+            animation: slideIn 1s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
