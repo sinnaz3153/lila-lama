@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zyris Sparchen Translator</title>
-    <link rel="icon" type="image/png" href="Zyris-mainv2.jpeg">
+    <title>Themroh</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='90' font-size='90' fill='magenta'>ⴵ</text></svg>">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -20,7 +21,7 @@
             overflow-x: hidden;
         }
 
-        .container, .login-container {
+        .container {
             background: #00000080;
             padding: 20px;
             border-radius: 15px;
@@ -106,62 +107,31 @@
             box-shadow: 0 8px 20px rgba(255, 255, 255, 0.5), 0 0 30px rgb(255, 255, 255);
             transform: translateY(-2px);
         }
+
         button:active::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        transform: translate(-50%, -50%) scale(0);
-        animation: clickEffect 0.6s ease-out;
-        pointer-events: none;
-    }
-
-    @keyframes clickEffect {
-        0% {
-            transform: translate(-50%, -50%) scale(0);
-            opacity: 1;
-        }
-        100% {
-            transform: translate(-50%, -50%) scale(3);
-            opacity: 0;
-        }
-    }
-
-        .loader {
-            display: flex;
-            position: fixed;
-            top: 0;
-            left: 0;
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
             width: 100%;
             height: 100%;
-            background: rgba(30, 30, 47, 0.9);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .loader:after {
-            content: '';
-            width: 50px;
-            height: 50px;
-            border: 5px solid #b085f5;
-            border-top: 5px solid transparent;
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            transform: translate(-50%, -50%) scale(0);
+            animation: clickEffect 0.6s ease-out;
+            pointer-events: none;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes clickEffect {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
 
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1); }
+            100% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
         }
 
         .button-group {
@@ -192,43 +162,39 @@
             }
         }
 
-        .container {
-            display: none;
-        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
 
-        /* Custom CSS for login page */
-        .login-container {
-            animation: slideIn 1s ease-out forwards;
-        }
-
-        @keyframes slideIn {
-            0% { opacity: 0; transform: translateY(-20px); }
-            100% { opacity: 1; transform: translateY(0); }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="loader"></div>
-    
     <div class="container">
-        <h1>Zyris</h1>
-    
+        <h1>Themroh</h1>
         <div class="button-group button-group-top">
+            <button onclick="clearFields()">Clear</button>
             <button onclick="pasteFromClipboard('inputText')">Paste</button>
             <button onclick="copyToClipboard('outputText')">Copy Output</button>
         </div>
-    
+
         <div class="textarea-container">
             <textarea id="inputText" placeholder="Enter text to translate..."></textarea>
             <textarea id="outputText" placeholder="Translation output..." readonly></textarea>
         </div>
-    
+
         <div class="button-group">
             <button onclick="translateText()">Translate</button>
             <button onclick="reverseTranslateText()">Reverse Translate</button>
         </div>
     </div>
-
     <script>
         // Character mapping from JSON
         const mapping = {
